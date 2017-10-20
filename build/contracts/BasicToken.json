@@ -1,0 +1,84 @@
+{
+  "contract_name": "BasicToken",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "balance",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000f57600080fd5b5b6101608061001f6000396000f300606060405263ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166318160ddd811461005357806370a0823114610078578063a9059cbb146100b6575b600080fd5b341561005e57600080fd5b6100666100f9565b60405190815260200160405180910390f35b341561008357600080fd5b61006673ffffffffffffffffffffffffffffffffffffffff600435166100ff565b60405190815260200160405180910390f35b34156100c157600080fd5b6100e573ffffffffffffffffffffffffffffffffffffffff6004351660243561012b565b604051901515815260200160405180910390f35b60005481565b73ffffffffffffffffffffffffffffffffffffffff81166000908152600160205260409020545b919050565b60005b929150505600a165627a7a72305820bb91b941728778601afda4b44ced055b95452ec0831091ce5092b96fa2a95d330029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1508532556222
+}

@@ -1,7 +1,7 @@
 pragma solidity ^0.4.11;
 
-import './zeppelin/token/BasicToken.sol'
-import './zeppelin/token/ERC20Interface.sol'
+import './zeppelin/token/BasicToken.sol';
+import './zeppelin/token/ERC20Interface.sol';
 
 /*
 
@@ -9,44 +9,44 @@ Copyright Will Harborne (Ethfinex) 2017
 
 */
 
-contract WrapperLock is BasicToken {
+contract WrapperLockEth is BasicToken {
 
-  address ZEROEX_PROXY;
+  address ZEROEX_PROXY = 0x8da0d80f5007ef1e431dd2127178d224e32c2ef4;
   address ETHFINEX;
 
   string public name;
   string public symbol;
   uint public decimals;
-  address public originalToken;
+  address public originalToken = 0x00;
 
-  mapping (address => uint) depositLock;
+  mapping (address => uint) public depositLock;
 
-  function WrapperLock(address _originalToken, string _name, string _symbol, uint _decimals) {
-    originalToken = _originalToken;
+  function WrapperLockEth(string _name, string _symbol, uint _decimals) {
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
+    ETHFINEX = msg.sender;
   }
 
-  function deposit(uint _value) returns (bool success) {
-    success = ERC20Interface(originalToken).transferFrom(msg.sender, this, _value);
-    if(success) {
-      balances[msg.sender] = balances[msg.sender].add(_value);
-      depositLock[msg.sender] = now + 3 hours;
-    }
+  function deposit(uint _value, uint _forTime) payable returns (bool success) {
+    require (_forTime >= 1);
+    require (now + _forTime * 1 hours >= depositLock[msg.sender]);
+    balances[msg.sender] = balances[msg.sender].add(msg.value);
+    depositLock[msg.sender] = now + _forTime * 1 hours;
+    return true;
   }
 
   function withdraw(uint8 v, bytes32 r, bytes32 s, uint _value, uint signatureValidUntilBlock) returns (bool success) {
     require(balanceOf(msg.sender) >= _value);
     if (now > depositLock[msg.sender]){
       balances[msg.sender] = balances[msg.sender].sub(_value);
-      success = ERC20Interface(originalToken).transfer(msg.sender, _value);
+      msg.sender.transfer(_value);
     }
     else {
       require(block.number < signatureValidUntilBlock);
       require(isValidSignature(ETHFINEX, keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
       balances[msg.sender] = balances[msg.sender].sub(_value);
-      success = ERC20Interface(originalToken).transfer(msg.sender, _value);
+      msg.sender.transfer(_value);
     }
   }
 
@@ -59,7 +59,7 @@ contract WrapperLock is BasicToken {
 
   function allowance(address owner, address spender) returns (uint) {
     if(spender == ZEROEX_PROXY) {
-      return 2**256 - 1
+      return 2**256 - 1;
     }
   }
 
