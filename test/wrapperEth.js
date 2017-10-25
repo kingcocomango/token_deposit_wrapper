@@ -35,7 +35,7 @@ contract('WrapperLockEth', function (accounts) {
       console.log("r: ", r, "s: ", s, "v: ", v);
 
       // return wrap.withdraw(v, r, s, web3.toWei(1, 'ether'), unlockUntilBlockNum, {from: accounts[0]})
-      return wrap.isValidSignature(accounts[0], dataToSign, v, r, s)
+      return wrap.isValidSignature(dataToSign, v, r, s)
     }).then(function(response) {
       assert.equal(response, true, 'Incorrect signature')
       // assert.equal(web3.eth.getBalance(accounts[0]).valueOf(), parseInt(starting_eth) + parseInt(web3.toWei(1, 'ether')), 'Withdrawal failed')

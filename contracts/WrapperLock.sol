@@ -12,7 +12,7 @@ Copyright Will Harborne (Ethfinex) 2017
 contract WrapperLock is BasicToken {
 
   address ZEROEX_PROXY = 0x8da0d80f5007ef1e431dd2127178d224e32c2ef4;
-  address ETHFINEX;
+  mapping (address => bool) isSigner;
 
   string public name;
   string public symbol;
@@ -26,7 +26,7 @@ contract WrapperLock is BasicToken {
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
-    ETHFINEX = msg.sender;
+    isSigner[msg.sender] = true;
   }
 
   function deposit(uint _value, uint _forTime) returns (bool success) {
@@ -47,7 +47,7 @@ contract WrapperLock is BasicToken {
     }
     else {
       require(block.number < signatureValidUntilBlock);
-      require(isValidSignature(ETHFINEX, keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
+      require(isValidSignature(keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
       balances[msg.sender] = balances[msg.sender].sub(_value);
       success = ERC20Interface(originalToken).transfer(msg.sender, _value);
     }
@@ -67,7 +67,6 @@ contract WrapperLock is BasicToken {
   }
 
   function isValidSignature(
-        address signer,
         bytes32 hash,
         uint8 v,
         bytes32 r,
@@ -76,12 +75,17 @@ contract WrapperLock is BasicToken {
         constant
         returns (bool)
     {
-        return signer == ecrecover(
+        return isSigner[ecrecover(
             keccak256("\x19Ethereum Signed Message:\n32", hash),
             v,
             r,
             s
-        );
+        )];
     }
+
+  function addSigner(address _newSigner) {
+    require(isSigner[msg.sender]);
+    isSigner[_newSigner] = true;
+  }
 
 }
