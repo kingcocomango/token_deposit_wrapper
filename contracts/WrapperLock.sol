@@ -88,4 +88,8 @@ contract WrapperLock is BasicToken {
     isSigner[_newSigner] = true;
   }
 
+  function keccak(address _sender, uint _value, uint _validTill) constant returns(bytes32) {
+    return keccak256(_sender, _value, _validTill);
+  }
+
 }
