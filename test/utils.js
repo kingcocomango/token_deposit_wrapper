@@ -40,4 +40,37 @@ const getTime = function () {
   })
 }
 
-module.exports = {getTime, timeJump, mineBlock}
+function solSha3 (...args) {
+  args = args.map(arg => {
+    if (typeof arg === 'string') {
+      if (arg.substring(0, 2) === '0x') {
+        return arg.slice(2)
+      } else {
+        return web3.toHex(arg).slice(2)
+      }
+    }
+
+    if (typeof arg === 'number') {
+      return leftPad((arg).toString(16), 64, 0)
+    } else {
+      return ''
+    }
+  })
+
+  args = args.join('')
+
+  return web3.sha3(args, { encoding: 'hex' })
+}
+
+function leftPad (str, len, ch) {
+  str = String(str)
+  var i = -1
+  if (!ch && ch !== 0) ch = ' '
+  len = len - str.length
+  while (++i < len) {
+    str = ch + str
+  }
+  return str
+}
+
+module.exports = {getTime, timeJump, mineBlock, solSha3}

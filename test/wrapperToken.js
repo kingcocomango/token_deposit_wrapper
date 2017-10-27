@@ -2,7 +2,7 @@
 const WrapperLock = artifacts.require('./WrapperLock.sol')
 const TestToken = artifacts.require('./TestToken.sol')
 
-const {getTime, mineBlock, timeJump} = require('./utils.js')
+const {getTime, mineBlock, timeJump, solSha3} = require('./utils.js')
 
 contract('WrapperLock', function (accounts) {
   it('should be possible to lock up some test token', async function () {
@@ -25,7 +25,8 @@ contract('WrapperLock', function (accounts) {
     const s = '0x' + sig.substr(66, 64)
     const v = web3.toDecimal(sig.substr(130, 2)) + 27
     assert.equal(await wrap.isValidSignature(dataToSign, v, r, s), true, 'Incorrect signature')
-    // assert.equal(await wrap.keccak(accounts[0], 1, 1), web3.sha3(accounts[0], 1, 1), 'web3.sha3 did not match keccak')
+    console.log(web3.version.api)
+    assert.equal(await wrap.keccak(accounts[0], 1, 1), solSha3(accounts[0], 1, 1), 'web3.sha3 did not match keccak')
     // web3.sha3 and keccack256 aren't matching up
   })
 

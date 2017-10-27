@@ -1,7 +1,8 @@
 pragma solidity ^0.4.11;
 
-import "./zeppelin/token/BasicToken.sol";
+import "./zeppelin/token/ERC20Basic.sol";
 import "./zeppelin/token/ERC20Interface.sol";
+import "./zeppelin/math/SafeMath.sol";
 
 /*
 
@@ -9,9 +10,10 @@ Copyright Will Harborne (Ethfinex) 2017
 
 */
 
-contract WrapperLockEth is BasicToken {
+contract WrapperLockEth is ERC20Basic {
+    using SafeMath for uint256;
 
-    address private constant ZEROEX_PROXY = 0x8da0d80f5007ef1e431dd2127178d224e32c2ef4;
+    address private constant ZEROEX_PROXY = 0x8da0D80f5007ef1e431DD2127178d224E32C2eF4;
     mapping (address => bool) private isSigner;
 
     string public name;
@@ -20,6 +22,7 @@ contract WrapperLockEth is BasicToken {
     address public originalToken = 0x00;
 
     mapping (address => uint) public depositLock;
+    mapping (address => uint256) public balances;
 
     function WrapperLockEth(string _name, string _symbol, uint _decimals) {
         name = _name;
@@ -45,7 +48,7 @@ contract WrapperLockEth is BasicToken {
     )
         public
         returns
-        (bool success)
+        (bool)
     {
         require(balanceOf(msg.sender) >= _value);
         if (now > depositLock[msg.sender]) {
@@ -57,6 +60,11 @@ contract WrapperLockEth is BasicToken {
             balances[msg.sender] = balances[msg.sender].sub(_value);
             msg.sender.transfer(_value);
         }
+        return true;
+    }
+
+    function transfer(address _to, uint256 _value) public returns (bool) {
+        return false;
     }
 
     function transferFrom(address _from, address _to, uint _value) public {
@@ -70,6 +78,10 @@ contract WrapperLockEth is BasicToken {
         if (_spender == ZEROEX_PROXY) {
             return 2**256 - 1;
         }
+    }
+
+    function balanceOf(address _owner) public constant returns (uint256) {
+        return balances[_owner];
     }
 
     function isValidSignature(
