@@ -20,7 +20,7 @@ contract('WrapperLock', function (accounts) {
     const wrap = await WrapperLock.deployed()
     let dataToSign = await wrap.keccak(accounts[0], 1, 1)
     let sig = web3.eth.sign(accounts[0], dataToSign)
-    console.log(accounts[0])
+    // console.log(accounts[0])
     const r = sig.substr(0, 66)
     const s = '0x' + sig.substr(66, 64)
     const v = web3.toDecimal(sig.substr(130, 2)) + 27
