@@ -56,7 +56,7 @@ contract WrapperLockEth is ERC20Basic {
             msg.sender.transfer(_value);
         } else {
             require(block.number < signatureValidUntilBlock);
-            require(isValidSignature(keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
+            require(isValidSignature(keccak256(msg.sender, address(this), signatureValidUntilBlock), v, r, s));
             balances[msg.sender] = balances[msg.sender].sub(_value);
             msg.sender.transfer(_value);
         }

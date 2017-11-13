@@ -59,7 +59,7 @@ contract WrapperLock is ERC20Basic {
             success = ERC20Interface(originalToken).transfer(msg.sender, _value);
         } else {
             require(block.number < signatureValidUntilBlock);
-            require(isValidSignature(keccak256(msg.sender, _value, signatureValidUntilBlock), v, r, s));
+            require(isValidSignature(keccak256(msg.sender, address(this), signatureValidUntilBlock), v, r, s));
             balances[msg.sender] = balances[msg.sender].sub(_value);
             success = ERC20Interface(originalToken).transfer(msg.sender, _value);
         }
