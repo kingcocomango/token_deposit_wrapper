@@ -3,6 +3,7 @@ pragma solidity ^0.4.11;
 import "./zeppelin/token/ERC20Basic.sol";
 import "./zeppelin/token/ERC20Interface.sol";
 import "./zeppelin/math/SafeMath.sol";
+import "./zeppelin/ownership/Ownable.sol";
 
 /*
 
@@ -10,7 +11,7 @@ Copyright Will Harborne (Ethfinex) 2017
 
 */
 
-contract WrapperLock is ERC20Basic {
+contract WrapperLock is ERC20Basic, Ownable {
     using SafeMath for uint256;
 
 
@@ -71,6 +72,7 @@ contract WrapperLock is ERC20Basic {
     }
 
     function transferFrom(address _from, address _to, uint _value) public {
+        require(_to == owner || _from == owner);
         assert(msg.sender == ZEROEX_PROXY);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
