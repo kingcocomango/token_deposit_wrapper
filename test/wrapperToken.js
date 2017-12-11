@@ -7,7 +7,7 @@ const {getTime, mineBlock, timeJump, solSha3} = require('./utils.js')
 contract('WrapperLock', function (accounts) {
   it('should be possible to lock up some test token', async function () {
     const test = await TestToken.new()
-    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18)
+    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18, 0x0000000000000000000000000000000000000000)
     await test.approve(wrap.address, 100)
     await wrap.deposit(100, 10, {from: accounts[0]})
     const durationLocked = await wrap.depositLock.call(accounts[0])
@@ -26,13 +26,13 @@ contract('WrapperLock', function (accounts) {
     const v = web3.toDecimal(sig.substr(130, 2)) + 27
     assert.equal(await wrap.isValidSignature(dataToSign, v, r, s), true, 'Incorrect signature')
     console.log(web3.version.api)
-    assert.equal(await wrap.keccak(accounts[0], 1, 1), solSha3(accounts[0], 1, 1), 'web3.sha3 did not match keccak')
+    assert.equal(await wrap.keccak(accounts[0], accounts[1], 1), solSha3(accounts[0], accounts[1], 1), 'web3.sha3 did not match keccak')
     // web3.sha3 and keccack256 aren't matching up
   })
 
   it('should be possible to withdraw the tokens', async function () {
     const test = await TestToken.new({from: accounts[0]})
-    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18, {from: accounts[0]})
+    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18, 0x0000000000000000000000000000000000000000, {from: accounts[0]})
     await test.approve(wrap.address, 100, {from: accounts[0]})
     await wrap.deposit(100, 10, {from: accounts[0]})
     const startingToken = (await test.balanceOf(accounts[0])).toNumber()
@@ -45,12 +45,12 @@ contract('WrapperLock', function (accounts) {
 
   it('should be possible to unlock the tokens', async function () {
     const test = await TestToken.new({from: accounts[0]})
-    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18, {from: accounts[0]})
+    const wrap = await WrapperLock.new(test.address, 'tst lock', 'lTST', 18, 0x0000000000000000000000000000000000000000, {from: accounts[0]})
     await test.approve(wrap.address, 100, {from: accounts[0]})
     await wrap.deposit(100, 10, {from: accounts[0]})
     const startingToken = (await test.balanceOf(accounts[0])).toNumber()
     const unlockUntilBlockNum = web3.eth.blockNumber + 100
-    let dataToSign = await wrap.keccak(accounts[0], 100, unlockUntilBlockNum)
+    let dataToSign = await wrap.keccak(accounts[0], wrap.address, unlockUntilBlockNum)
     let sig = web3.eth.sign(accounts[0], dataToSign)
     // console.log(sig)
     const r = sig.substr(0, 66)

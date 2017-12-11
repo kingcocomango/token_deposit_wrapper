@@ -13,7 +13,7 @@ Copyright Will Harborne (Ethfinex) 2017
 contract WrapperLockEth is ERC20Basic, Ownable {
     using SafeMath for uint256;
 
-    address private constant ZEROEX_PROXY = 0x8da0D80f5007ef1e431DD2127178d224E32C2eF4;
+    address public TRANSFER_PROXY;
     mapping (address => bool) private isSigner;
 
     string public name;
@@ -24,7 +24,8 @@ contract WrapperLockEth is ERC20Basic, Ownable {
     mapping (address => uint) public depositLock;
     mapping (address => uint256) public balances;
 
-    function WrapperLockEth(string _name, string _symbol, uint _decimals) {
+    function WrapperLockEth(string _name, string _symbol, uint _decimals, address _transferProxy) {
+        TRANSFER_PROXY = _transferProxy;
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
@@ -69,14 +70,14 @@ contract WrapperLockEth is ERC20Basic, Ownable {
 
     function transferFrom(address _from, address _to, uint _value) public {
         require(_to == owner || _from == owner);
-        assert(msg.sender == ZEROEX_PROXY);
+        assert(msg.sender == TRANSFER_PROXY);
         balances[_to] = balances[_to].add(_value);
         balances[_from] = balances[_from].sub(_value);
         Transfer(_from, _to, _value);
     }
 
     function allowance(address _owner, address _spender) public constant returns (uint) {
-        if (_spender == ZEROEX_PROXY) {
+        if (_spender == TRANSFER_PROXY) {
             return 2**256 - 1;
         }
     }
@@ -107,7 +108,7 @@ contract WrapperLockEth is ERC20Basic, Ownable {
         isSigner[_newSigner] = true;
     }
 
-    function keccak(address _sender, uint _value, uint _validTill) public constant returns(bytes32) {
-        return keccak256(_sender, _value, _validTill);
+    function keccak(address _sender, address _wrapper, uint _validTill) public constant returns(bytes32) {
+        return keccak256(_sender, _wrapper, _validTill);
     }
 }

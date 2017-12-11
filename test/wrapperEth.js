@@ -30,7 +30,7 @@ contract('WrapperLockEth', function (accounts) {
     await wrap.deposit(0, 10, {from: accounts[0], value: web3.toWei(1, 'ether')})
     const starting_eth = (await web3.eth.getBalance(accounts[0])).valueOf()
     let unlockUntilBlockNum = web3.eth.blockNumber + 10
-    let dataToSign = await wrap.keccak(accounts[0], parseInt(web3.toWei(1, 'ether')), unlockUntilBlockNum)
+    let dataToSign = await wrap.keccak(accounts[0], wrap.address, unlockUntilBlockNum)
     let sig = web3.eth.sign(accounts[0], dataToSign)
     // console.log(sig)
     const r = sig.substr(0, 66)
