@@ -35,6 +35,7 @@ contract WrapperLockEth is ERC20Basic, Ownable {
     function deposit(uint _value, uint _forTime) public payable returns (bool success) {
         require(_forTime >= 1);
         require(now + _forTime * 1 hours >= depositLock[msg.sender]);
+        require(msg.value == _value);
         balances[msg.sender] = balances[msg.sender].add(msg.value);
         depositLock[msg.sender] = now + _forTime * 1 hours;
         return true;
